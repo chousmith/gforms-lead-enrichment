@@ -21,11 +21,11 @@ if (class_exists("GFForms")) {
 
         protected $_version = "1.0";
         protected $_min_gravityforms_version = "1.7.9999";
-        protected $_slug = "avala-api-gforms-feed";
-        protected $_path = "avala-api-gforms-feed/avala-api-gforms-feed.php";
+        protected $_slug = "gforms-lead-enrichment";
+        protected $_path = "gforms-lead-enrichment/gforms-lead-enrichment.php";
         protected $_full_path = __FILE__;
-        protected $_title = "Avala API Plugin Settings";
-        protected $_short_title = "Avala API";
+        protected $_title = "Gravity Forms Lead Enrichment";
+        protected $_short_title = "Lead Enrichment";
 
         // custom data vars for use outside class
         public $_avala_result = array();
@@ -42,38 +42,37 @@ if (class_exists("GFForms")) {
             $this->_default_country = $this->get_plugin_setting('avala_defaultCountry');
         }
 
-        // Plugin Settings Page :: Forms -> Avala API Feed
+        // outputs the info page :: Gravity Forms -> Lead Enrichment
         public function plugin_page() {
             ?>
-            <p>Avala API Settings are handled within Gravity Forms settings page at:<br />
-                <b>Forms</b> -> <b>Settings</b> -> <b><a href="<?php echo get_bloginfo(); ?>/wp-admin/admin.php?page=gf_settings&subview=avala-api-gforms-feed">Avala API</a>a></b>
+            <p>Lead Enrichment API Settings are handled within Gravity Forms settings page at:<br />
+                <b>Forms</b> -> <b>Settings</b> -> <b><a href="<?php echo get_bloginfo(); ?>/wp-admin/admin.php?page=gf_settings&subview=gforms-lead-enrichment">Lead Enrichment</a></b>
             </p>
             <h2>How to use this plugin</h2>
             <h3>A step-by-step guide</h3>
             <ol>
-                <li>Update Plugin Settings by going to "Forms -> Settings -> Avala API"<br>
+                <li>Update Plugin Settings by going to "Forms -> Settings -> Lead Enrichment"<br>
                     You will need the following:
                     <ul style="margin-left: 20px;">
-                        <li>Aimbase submit URL(s) - live and/or QA</li>
-                        <li>Any custom lead categories, sources, and types not included in this plugin defaults</li>
+                        <li>Ninthlink Enrichment System Site API Key</li>
+                        <!-- <li>Any custom lead categories, sources, and types not included in this plugin defaults</li>
                         <li>Your product ID list - this can be exported directly from Aimbase</li>
-                        <li>Any opt-in list ID(s)</li>
+                        <li>Any opt-in list ID(s)</li> -->
                     </ul>
                 </li>
-                <li>Create your forms</li>
-                <li>Add custom Feeds to your form<br />
-                    From the form edit/view page, go to "My Form -> Form Settings -> Avala API Feeds"</li>
-                <li>Click "Add New" to create a new feed</li>
+                <li>Create your Gravity Form(s)</li>
+                <li>Add the custom Feed to your form<br />
+                    From the form edit/view page, go to "My Form -> Form Settings -> Lead Enrichment"</li>
+                <li>Click "Add New" to create a new Feed</li>
                 <li>Update your feed settings per your requirements</li>
-                <li>Map necessary form fields to your Avala fields to be submitted - some fields are required<br />
+                <li>Map necessary form fields to be submitted for Lead Enrichment.<br />
                     Hidden fields can be used to pass data not entered by the customer (ie: Brand)</li>
                 <li>Set up a feed submit condition as necessary</li>
                 <li>Save your changes! You are all set</li>
             </ol>
-            <h3>Why do I need conditions for my feeds?</h3>
+            <h3>When would I need conditions for my feeds?</h3>
             <p>A new feed must be created for every variation of form submit. Conditionals allow you to pick and choose which feed will be used at which time, for example if you are changing lead source based on entry.</p>
             <?php
-            //wp_redirect( 'admin.php?page=gf_settings&subview=Avala+API+Feed' );
         }
 
         /**
