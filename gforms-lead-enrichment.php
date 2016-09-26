@@ -54,7 +54,10 @@ if (class_exists("GFForms")) {
                 <li>Update Plugin Settings by going to "Forms -> Settings -> Lead Enrichment"<br>
                     You will need the following:
                     <ul style="margin-left: 20px;">
-                        <li>Ninthlink Enrichment System Site API Key</li>
+                        <li>Ninthlink Enrichment System Public API Key</li>
+                        <li>Ninthlink Enrichment System Private API Key</li>
+                        <li>Ninthlink Enrichment System Site ID</li>
+                        <li>Whether to run Enrichment right away or not (can be overriden in individual form feed settings)</li>
                         <!-- <li>Any custom lead categories, sources, and types not included in this plugin defaults</li>
                         <li>Your product ID list - this can be exported directly from Aimbase</li>
                         <li>Any opt-in list ID(s)</li> -->
