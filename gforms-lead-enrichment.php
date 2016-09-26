@@ -1,8 +1,8 @@
 <?php
 /*
-Plugin Name: Gravity Forms Lead Enrichment
+Plugin Name: Gravity Forms Lead Enrichment Add-On
 Plugin URI: http://www.ninthlink.com
-Description: A Gravity Forms add-on to connect Gravity Forms submissions to the Ninthlink Enrichment System ("nes") to potentially Enrich the submitted Lead with additional information from TowerData and beyond.
+Description: Integrates Gravity Forms with the Ninthlink Enrichment System ("nes") allowing form submissions to be automatically sent for further enrichment from TowerData and beyond.
 Version: 1.0
 Author: Ninthlink, Inc.
 Author URI: http://www.ninthlink.com
