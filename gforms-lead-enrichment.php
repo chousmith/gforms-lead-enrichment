@@ -1,3 +1,4 @@
+
 <?php
 /*
 Plugin Name: Gravity Forms Lead Enrichment Add-On
@@ -53,7 +54,8 @@ if (class_exists("GFForms")) {
             <ol>
                 <li>Update Plugin Settings by going to "Forms -> Settings -> Lead Enrichment"<br>
                     You will need the following:
-                    <ul style="margin-left: 20px;">
+                    <ol style="margin-left: 20px;">
+                        <li>Ninthlink Enrichment System API Endpoint URL</li>
                         <li>Ninthlink Enrichment System Public API Key</li>
                         <li>Ninthlink Enrichment System Private API Key</li>
                         <li>Ninthlink Enrichment System Site ID</li>
@@ -61,7 +63,7 @@ if (class_exists("GFForms")) {
                         <!-- <li>Any custom lead categories, sources, and types not included in this plugin defaults</li>
                         <li>Your product ID list - this can be exported directly from Aimbase</li>
                         <li>Any opt-in list ID(s)</li> -->
-                    </ul>
+                    </ol>
                 </li>
                 <li>Create your Gravity Form(s)</li>
                 <li>Add the custom Feed to your form<br />
@@ -89,7 +91,7 @@ if (class_exists("GFForms")) {
             // array of settings fields
             $a = array(
                 array(
-                    "title"  => "Avala API Settings",
+                    "title"  => "Lead Enrichment Settings",
                     "fields" => array(
                         array(
                             "label"   => "Avala Feed Name",
@@ -397,12 +399,59 @@ if (class_exists("GFForms")) {
          *
          *  These setting apply to entire plugin, not just individual feeds
          *
+
+             <li>Ninthlink Enrichment System API Endpoint URL</li>
+             <li>Ninthlink Enrichment System Public API Key</li>
+             <li>Ninthlink Enrichment System Private API Key</li>
+             <li>Ninthlink Enrichment System Site ID</li>
+             <li>li>
+         *
          **/
         public function plugin_settings_fields() {
             return array(
                 array(
-                    "title"  => "Avala API Settings",
+                    "title"  => "Ninthlink Enrichment System API Settings",
                     "fields" => array(
+                        array(
+                            "name"    => "nes_apiUrl",
+                            "tooltip" => "URL to connect to for Enrichment",
+                            "label"   => "API Endpoint URL",
+                            "type"    => "text",
+                            "class"   => "medium"
+                        ),
+                        array(
+                            "name"    => "nes_pubKey",
+                            "tooltip" => "Ninthlink Enrichment System Public API Key",
+                            "label"   => "Public API Key",
+                            "type"    => "text",
+                            "class"   => "medium"
+                        ),
+                        array(
+                            "name"    => "nes_privKey",
+                            "tooltip" => "Ninthlink Enrichment System Private API Key",
+                            "label"   => "Private API Key",
+                            "type"    => "text",
+                            "class"   => "medium"
+                        ),
+                        array(
+                            "name"    => "nes_siteID",
+                            "tooltip" => "The particular Site ID for this WordPress site ( ". esc_url( site_url() ) ." )",
+                            "label"   => "Site ID",
+                            "type"    => "text",
+                            "class"   => "medium"
+                        ),
+                        array(
+                            "name"    => "nes_defaultEnrichment",
+                            "tooltip" => "Whether to run Enrichment right away or not (can be overriden in individual form feed settings)",
+                            "label"   => "Default Enrichment",
+                            "type"    => "radio",
+                            "class"   => "small",
+                            "choices" => array(
+                                array("label" => "Now", "value" => "now"),
+                                array("label" => "Later", "value" => "later"),
+                                array("label" => "Never", "value" => "never"),
+                            )
+                        ),
                         array(
                             "name"    => "avala_liveApiUrl",
                             "tooltip" => "URL for production CURL submits",
