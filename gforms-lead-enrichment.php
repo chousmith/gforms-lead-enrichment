@@ -46,7 +46,7 @@ if (class_exists("GFForms")) {
         public function plugin_page() {
             ?>
             <p>Lead Enrichment API Settings are handled within Gravity Forms settings page at:<br />
-                <b>Forms</b> -> <b>Settings</b> -> <b><a href="<?php echo get_bloginfo(); ?>/wp-admin/admin.php?page=gf_settings&subview=gforms-lead-enrichment">Lead Enrichment</a></b>
+                <b>Forms</b> -> <b>Settings</b> -> <b><a href="<?php echo admin_url( 'admin.php?page=gf_settings&subview=gforms-lead-enrichment' ); ?>">Lead Enrichment</a></b>
             </p>
             <h2>How to use this plugin</h2>
             <h3>A step-by-step guide</h3>
