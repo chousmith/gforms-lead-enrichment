@@ -27,21 +27,19 @@ if (class_exists("GFForms")) {
         protected $_full_path = __FILE__;
         protected $_title = "Gravity Forms Lead Enrichment";
         protected $_short_title = "Lead Enrichment";
+        protected $_nes_api_endpt = "gravityformsapi/forms/1/submissions";
 
-        // custom data vars for use outside class
+        // custom data vars for use outside class?
         public $_avala_result = array();
-        // these will be access when creating cutom GForm Fields below
-        public $_custom_product_id_list = array();
-        public $_default_country = 'US';
 
         public $_debug;
 
         // constructor to assign plugin setting data to custom vars above
-        public function __construct() {
-            parent::__construct();
-            $this->_custom_product_id_list = $this->get_plugin_setting('avala_customProductIdList');
-            $this->_default_country = $this->get_plugin_setting('avala_defaultCountry');
-        }
+        // public function __construct() {
+        //     parent::__construct();
+        //     $this->_custom_product_id_list = $this->get_plugin_setting('avala_customProductIdList');
+        //     $this->_default_country = $this->get_plugin_setting('avala_defaultCountry');
+        // }
 
         // outputs the info page :: Gravity Forms -> Lead Enrichment
         public function plugin_page() {
@@ -94,162 +92,43 @@ if (class_exists("GFForms")) {
                     "title"  => "Lead Enrichment Settings",
                     "fields" => array(
                         array(
-                            "label"   => "Avala Feed Name",
+                            "label"   => "Ad or Action",
                             "type"    => "text",
-                            "name"    => "avalaFeedName",
-                            "tooltip" => "This is the tooltip",
-                            "class"   => "small"
+                            "name"    => "nesAd",
+                            "tooltip" => "Ad or Action to attribute this Lead to",
+                            "class"   => "medium"
                         ),
                         array(
-                            "label"   => "Submit Form to",
-                            "type"    => "radio",
-                            "name"    => "avalaApiFeedSubmit",
-                            "tooltip" => "Production API or Developer API for testing",
-                            "choices" => array(
-                                array("label" => "Live API", "value" => 1),
-                                array("label" => "Developer Mode", "value" => 2),
-                                array("label" => "None (do not submit to Avala)", "value" => 0),
-                            )
-                        ),
-                        array(
-                            "label"   => "Lead Source",
-                            "type"    => "select",
-                            "name"    => "avalaLeadsourcename",
-                            "tooltip" => "Default Lead Source for this form",
-                            "choices" => array(
-                                //array("label" => get_bloginfo('name')),
-                                array("label" => "--- Default Lead Source(s) ---", "value" => ''),
-                                array("label" => "Affiliate"),
-                                array("label" => "Billboard"),
-                                array("label" => "BRC Card"),
-                                array("label" => "Buyerzone-Abandoned"),
-                                array("label" => "BuyerZone-Qualified"),
-                                array("label" => "Call Center"),
-                                array("label" => "Co-Brand Out of Market"),
-                                array("label" => "Consumer iPad"),
-                                array("label" => "Dealer Import"),
-                                array("label" => "Direct Mail"),
-                                array("label" => "Historical"),
-                                array("label" => "Kiosk"),
-                                array("label" => "Media-AdRoll"),
-                                array("label" => "Media-FutureAds"),
-                                array("label" => "Media-PointRoll"),
-                                array("label" => "Media-Rocket_Fuel"),
-                                array("label" => "Media-Turn"),
-                                array("label" => "Media-Videology"),
-                                array("label" => "Microsite"),
-                                array("label" => "Newsletter"),
-                                array("label" => "Other"),
-                                array("label" => "Page Retargeting"),
-                                array("label" => "PicMktg"),
-                                array("label" => "Print Ad"),
-                                array("label" => "Promo"),
-                                array("label" => "Radio"),
-                                array("label" => "Referral and Rewards"),
-                                array("label" => "Rock-n-Roll"),
-                                array("label" => "Search - Organic"),
-                                array("label" => "Search - Paid"),
-                                array("label" => "Sponsored Email"),
-                                array("label" => "Television"),
-                                array("label" => "Third Party"),
-                            ),
-                        ),
-                        array(
-                            "label"   => "Lead Category",
-                            "type"    => "select",
-                            "name"    => "avalaLeadcategoryname",
-                            "tooltip" => "Default Lead Category for this form",
-                            "choices" => array(
-                                //array("label" => get_bloginfo('name')),
-                                array("label" => "--- Default Lead Category(s) ---", "value" => ''),
-                                array("label" => "Affiliate"),
-                                array("label" => "Buyerzone"),
-                                array("label" => "Co-Brand"),
-                                array("label" => "Dealer Entry"),
-                                array("label" => "Display Advertising"),
-                                array("label" => "Email"),
-                                array("label" => "Event"),
-                                array("label" => "Other"),
-                                array("label" => "Print Ad"),
-                                array("label" => "Referral Program"),
-                                array("label" => "Third Party"),
-                            ),
-                        ),
-                        array(
-                            "label"   => "Lead Type",
-                            "type"    => "select",
-                            "name"    => "avalaLeadtypename",
-                            "tooltip" => "Default Lead Category for this form",
-                            "choices" => array(
-                                //array("label" => get_bloginfo('name')),
-                                array("label" => "--- Default Lead Type(s) ---", "value" => ''),
-                                array("label" => "Campaign"),
-                                array("label" => "Contact Dealer"),
-                                array("label" => "Dealer Entry"),
-                                array("label" => "Request Appointment"),
-                                array("label" => "Request Brochure Download"),
-                                array("label" => "Request Brochure Download & DVD"),
-                                array("label" => "Request Brochure Mail"),
-                                array("label" => "Request Brochure Mail & Download"),
-                                array("label" => "Request Brochure Mail & Download & DVD"),
-                                array("label" => "Request Brochure Mail & DVD"),
-                                array("label" => "Request Buyer's Guide"),
-                                array("label" => "Request DVD"),
-                                array("label" => "Request Financing"),
-                                array("label" => "Request Quote"),
-                                array("label" => "Request Test Drive"),
-                                array("label" => "Request Trade In"),
-                                array("label" => "Subscriber"),
-                                array("label" => "Sweepstakes"),
-                                array("label" => "Truck Load"),
-                                array("label" => "Other"),
-                            ),
-                        ),
-                        array(
-                            "name" => "avalaMappedFields_Contact",
+                            "name" => "nesMappedFields_Contact",
                             "label" => "Map Contact Fields",
                             "type" => "field_map",
-                            "tooltip" => "Map each Avala Field to Gravity Form Field",
+                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
                             "field_map" => array(
-                                array("name" => "FirstName","label" => "First Name","required" => 1),
-                                array("name" => "LastName","label" => "Last Name","required" => 1),
-                                array("name" => "EmailAddress","label" => "Email Address","required" => 1),
-                                array("name" => "HomePhone","label" => "Phone (Home)","required" => 0),
-                                array("name" => "MobilePhone","label" => "Phone (Mobile)","required" => 0),
-                                array("name" => "WorkPhone","label" => "Phone (Work)","required" => 0),
-                                array("name" => "Comments","label" => "Comments","required" => 0),
+                                array("name" => "FirstName","label" => "First Name","required" => 0),
+                                array("name" => "LastName","label" => "Last Name","required" => 0),
+                                array("name" => "EmailAddress","label" => "Email Address","required" => 0),
+                                array("name" => "Phone","label" => "Phone","required" => 0),
                             )
                         ),
                         array(
-                            "name" => "avalaMappedFields_Address",
+                            "name" => "nesMappedFields_Address",
                             "label" => "Map Address Fields",
                             "type" => "field_map",
-                            "tooltip" => "Map each Avala Field to Gravity Form Field",
+                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
                             "field_map" => array(
                                 array("name" => "Address1","label" => "Address","required" => 0),
                                 array("name" => "Address2","label" => "Address (line 2)","required" => 0),
                                 array("name" => "City","label" => "City","required" => 0),
                                 array("name" => "State","label" => "State","required" => 0),
-                                array("name" => "CountryCode","label" => "Country","required" => 0),
-                                array("name" => "PostalCode","label" => "Zip / Postal Code","required" => 1),
+                                array("name" => "Country","label" => "Country","required" => 0),
+                                array("name" => "PostalCode","label" => "Zip / Postal Code","required" => 0),
                             )
                         ),
                         array(
-                            "name" => "avalaMappedFields_Subscription",
-                            "label" => "Map Subscription Fields",
-                            "type" => "field_map",
-                            "tooltip" => "Map each Avala Field to Gravity Form Field",
-                            "field_map" => array(
-                                array("name" => "RecieveEmailCampaigns","label" => "<code>Recieve Email Campaigns</code><br /><small>Please send me exclusive sale alerts...</small>","required" => 0),
-                                array("name" => "ReceiveNewsletter","label" => "<code>Receive Newsletter</code>","required" => 0),
-                                array("name" => "ReceiveSmsCampaigns","label" => "<code>Receive SMS Campaigns</code>","required" => 0),
-                            )
-                        ),
-                        array(
-                            "name" => "avalaMappedFields_AddlData",
+                            "name" => "nesMappedFields_AddlData",
                             "label" => "Map Additional Fields",
                             "type" => "field_map",
-                            "tooltip" => "Map each Avala Field to Gravity Form Field",
+                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
                             "field_map" => array(
                                 array("name" => "AccountId","label" => "Account Id","required" => 0),
                                 array("name" => "Brand","label" => "Brand","required" => 0),
@@ -266,10 +145,10 @@ if (class_exists("GFForms")) {
                             ),
                         ),
                         array(
-                            "name" => "avalaMappedFields_CustomData",
+                            "name" => "nesMappedFields_CustomData",
                             "label" => "Map Custom Data Fields",
                             "type" => "field_map",
-                            "tooltip" => "Map each Avala Field to Gravity Form Field",
+                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
                             "field_map" => array(
                                 array("name" => "PromoCode","label" => "<code>Promo Code</code>","required" => 0),
                                 array("name" => "Event","label" => "<code>Event</code>","required" => 0),
@@ -293,23 +172,9 @@ if (class_exists("GFForms")) {
                         array(
                             "label"   => "Medium / Source",
                             "type"    => "text",
-                            "name"    => "avalaMediumSource",
+                            "name"    => "nesMediumSource",
                             "tooltip" => "For example \"Adwords\". Use conditional settings below to process feed accordingly.",
                             "class"   => "small"
-                        ),
-                        array(
-                            "name" => "avalaMappedFields_WebSession",
-                            "label" => "Mapped Fields",
-                            "type" => "field_map",
-                            "tooltip" => "Map each Avala Field to Gravity Form Field",
-                            "field_map" => array(
-                                array("name" => "DeliveryMethod","label" => "<code>Delivery Method</code>","required" => 0),
-                                //array("name" => "Medium","label" => "Medium / Source","required" => 0),
-                                //array("name" => "KeyWords","label" => "Key Words","required" => 0),
-                                //array("name" => "PagesViewed","label" => "Pages Viewed","required" => 0),
-                                //array("name" => "PageViews","label" => "Page Views","required" => 0),
-                                //array("name" => "TimeOnSite","label" => "Time On Site","required" => 0),
-                            )
                         )
                     )
                 ),
@@ -317,11 +182,11 @@ if (class_exists("GFForms")) {
                     "title"  => "Feed Settings",
                     "fields" => array(
                         array(
-                            "name" => "avalaCondition",
-                            "label" => __("Conditional", "avala-api-gforms-feed"),
+                            "name" => "nesCondition",
+                            "label" => __("Conditional", "gforms-lead-enrichment"),
                             "type" => "feed_condition",
-                            "checkbox_label" => __('Enable Feed Condition', 'avala-api-gforms-feed'),
-                            "instructions" => __("Process this Avala feed if", "avala-api-gforms-feed")
+                            "checkbox_label" => __('Enable Feed Condition', 'gforms-lead-enrichment'),
+                            "instructions" => __("Process this Avala feed if", "gforms-lead-enrichment")
                         ),
                     )
                 )
@@ -362,13 +227,14 @@ if (class_exists("GFForms")) {
          *
          **/
         public function feed_list_columns() {
+            // #todo
             return array(
-                'avalaFeedName' => __('Name', 'avala-api-gforms-feed'),
-                'avalaApiFeedSubmit' => __('Submit To', 'avala-api-gforms-feed'),
-                'avalaLeadsourcename' => __('Lead Source', 'avala-api-gforms-feed'),
-                'avalaLeadcategoryname' => __('Lead Category', 'avala-api-gforms-feed'),
-                'avalaLeadtypename' => __('Lead Type', 'avala-api-gforms-feed'),
-                'avalaCondition' => __('Condition(s)', 'avala-api-gforms-feed'),
+                'avalaFeedName' => __('Name', 'gforms-lead-enrichment'),
+                'avalaApiFeedSubmit' => __('Submit To', 'gforms-lead-enrichment'),
+                'avalaLeadsourcename' => __('Lead Source', 'gforms-lead-enrichment'),
+                'avalaLeadcategoryname' => __('Lead Category', 'gforms-lead-enrichment'),
+                'avalaLeadtypename' => __('Lead Type', 'gforms-lead-enrichment'),
+                'avalaCondition' => __('Condition(s)', 'gforms-lead-enrichment'),
             );
         }
         // customize the value of mytext before it is rendered to the list
@@ -447,73 +313,6 @@ if (class_exists("GFForms")) {
                             )
                         ),
                         array(
-                            "name"    => "avala_liveApiUrl",
-                            "tooltip" => "URL for production CURL submits",
-                            "label"   => "Live API URL",
-                            "type"    => "text",
-                            "class"   => "medium"
-                        ),
-                        array(
-                            "name"    => "avala_devApiUrl",
-                            "tooltip" => "URL for development CURL submits",
-                            "label"   => "Dev API URL",
-                            "type"    => "text",
-                            "class"   => "medium"
-                        ),
-                        array(
-                            "name"    => "avala_customLeadCategory",
-                            "tooltip" => "Add your own Lead Category(ies), one per line",
-                            "label"   => "Custom Lead Category(ies)",
-                            "type"    => "textarea",
-                            "class"   => "small"
-                        ),
-                        array(
-                            "name"    => "avala_customLeadSource",
-                            "tooltip" => "Add your own Lead Source(s), one per line",
-                            "label"   => "Custom Lead Source(s)",
-                            "type"    => "textarea",
-                            "class"   => "small"
-                        ),
-                        array(
-                            "name"    => "avala_customLeadType",
-                            "tooltip" => "Add your own Lead Type(s), one per line",
-                            "label"   => "Custom Lead Type(s)",
-                            "type"    => "textarea",
-                            "class"   => "small"
-                        ),
-                        array(
-                            "name"    => "avala_customProductIdList",
-                            "tooltip" => "Add Product List in the form of<br />\"Product Name, Product ID#\"<br />(without quotes), one per line<br />Adds custom advanced field if used",
-                            "label"   => "Product ID List",
-                            "type"    => "textarea",
-                            "class"   => "small"
-                        ),
-                        array(
-                            "name"    => "avala_defaultOptInListId",
-                            "tooltip" => "ID(s) used for opt-in lists (provided by Avala)<br />Comma seperated values",
-                            "label"   => "Opt-In List ID(s)",
-                            "type"    => "text",
-                            "class"   => "small"
-                        ),
-                        array(
-                            "name"    => "avala_defaultCountry",
-                            "tooltip" => "Lead country will default to this value if no user entry<br/>Uses \"US\" if this field left blank",
-                            "label"   => "Default Country",
-                            "type"    => "radio",
-                            "class"   => "small",
-                            "choices" => array(
-                                array("label" => "United States (US)", "value" => "US"),
-                                array("label" => "Canada (CA)", "value" => "CA"),
-                            )
-                        ),
-                        array(
-                            "name"    => "avala_defaultPostalCode",
-                            "tooltip" => "Default postal code to be used if no user entry<br />Uses \"00000\" if this field left blank",
-                            "label"   => "Default Postal Code",
-                            "type"    => "text",
-                            "class"   => "small"
-                        ),
-                        array(
                             "name"    => "nes_debugMode",
                             "tooltip" => "Show debug arrays on all form submits",
                             "label"   => "Debug Mode",
@@ -542,24 +341,21 @@ if (class_exists("GFForms")) {
             $avalaApiFeedSubmit = $feed['meta']['avalaApiFeedSubmit'];
             $url = null;
 
-			// current user info
-			global $current_user;
-			get_currentuserinfo();
+      			// current user info
+      			global $current_user;
+      			get_currentuserinfo();
 
-            // get submit to location (exit if none)
-            if ( $avalaApiFeedSubmit == 1 ) :
-                $url = $this->get_plugin_setting('avala_liveApiUrl'); // submit to live
-            elseif ( $avalaApiFeedSubmit == 2 ) :
-                $url = $this->get_plugin_setting('avala_devApiUrl'); // submit to dev
-            else :
-                return false; // do nothing - GForm submits as normal without Avala API
+            // get submit to location, and exit if none
+            $url = $this->get_plugin_setting('nes_apiUrl');
+            if ( $url == '' ) :
+              return false; // do nothing - GForm submits as normal
             endif;
 
             // we will use Google Analytics cookies for some data if available
             if ( isset($_COOKIE['__utmz']) && !empty($_COOKIE['__utmz']) )
                 $ga_cookie = $this->parse_ga_cookie( $_COOKIE['__utmz'] );
 
-            // The full array of data that will be translated into Avala API data
+            // full data array for Lead Enrichment, with some default values
             $jsonArray = array(
                 'LeadSourceName'                => $feed['meta']['avalaLeadsourcename'],
                 'LeadTypeName'                  => $feed['meta']['avalaLeadtypename'],
