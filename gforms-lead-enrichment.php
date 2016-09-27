@@ -399,12 +399,6 @@ if (class_exists("GFForms")) {
          *
          *  These setting apply to entire plugin, not just individual feeds
          *
-
-             <li>Ninthlink Enrichment System API Endpoint URL</li>
-             <li>Ninthlink Enrichment System Public API Key</li>
-             <li>Ninthlink Enrichment System Private API Key</li>
-             <li>Ninthlink Enrichment System Site ID</li>
-             <li>li>
          *
          **/
         public function plugin_settings_fields() {
@@ -414,8 +408,8 @@ if (class_exists("GFForms")) {
                     "fields" => array(
                         array(
                             "name"    => "nes_apiUrl",
-                            "tooltip" => "URL to connect to for Enrichment",
-                            "label"   => "API Endpoint URL",
+                            "tooltip" => "Base URL to connect to for Enrichment",
+                            "label"   => "API Endpoint Base URL",
                             "type"    => "text",
                             "class"   => "medium"
                         ),
@@ -435,7 +429,7 @@ if (class_exists("GFForms")) {
                         ),
                         array(
                             "name"    => "nes_siteID",
-                            "tooltip" => "The particular Site ID for this WordPress site ( ". esc_url( site_url() ) ." )",
+                            "tooltip" => "The particular Site ID for this WordPress site ". esc_url( site_url() ),
                             "label"   => "Site ID",
                             "type"    => "text",
                             "class"   => "medium"
