@@ -1,4 +1,3 @@
-
 <?php
 /*
 Plugin Name: Gravity Forms Lead Enrichment Add-On
