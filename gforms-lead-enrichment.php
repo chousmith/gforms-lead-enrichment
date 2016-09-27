@@ -99,14 +99,25 @@ if (class_exists("GFForms")) {
                             "class"   => "medium"
                         ),
                         array(
+                            "label"   => "Run Lead Enrichment",
+                            "type"    => "radio",
+                            "name"    => "nesRun",
+                            "tooltip" => "Process Enrichment right away, or at some later point",
+                            "choices" => array(
+                                array("label" => "Now", "value" => 1),
+                                array("label" => "Later", "value" => 2),
+                                array("label" => "Never", "value" => 0),
+                            )
+                        ),
+                        array(
                             "name" => "nesMappedFields_Contact",
                             "label" => "Map Contact Fields",
                             "type" => "field_map",
-                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
+                            "tooltip" => "Map Lead Enrichment fields to Gravity Forms fields",
                             "field_map" => array(
                                 array("name" => "FirstName","label" => "First Name","required" => 0),
                                 array("name" => "LastName","label" => "Last Name","required" => 0),
-                                array("name" => "EmailAddress","label" => "Email Address","required" => 0),
+                                array("name" => "Email","label" => "Email Address","required" => 0),
                                 array("name" => "Phone","label" => "Phone","required" => 0),
                             )
                         ),
@@ -114,7 +125,7 @@ if (class_exists("GFForms")) {
                             "name" => "nesMappedFields_Address",
                             "label" => "Map Address Fields",
                             "type" => "field_map",
-                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
+                            "tooltip" => "Map Lead Enrichment fields to Gravity Forms fields",
                             "field_map" => array(
                                 array("name" => "Address1","label" => "Address","required" => 0),
                                 array("name" => "Address2","label" => "Address (line 2)","required" => 0),
@@ -122,60 +133,21 @@ if (class_exists("GFForms")) {
                                 array("name" => "State","label" => "State","required" => 0),
                                 array("name" => "Country","label" => "Country","required" => 0),
                                 array("name" => "PostalCode","label" => "Zip / Postal Code","required" => 0),
+                                array("name" => "AddressInput","label" => "Address Input","required" => 0),
                             )
                         ),
                         array(
                             "name" => "nesMappedFields_AddlData",
                             "label" => "Map Additional Fields",
                             "type" => "field_map",
-                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
+                            "tooltip" => "Map Lead Enrichment fields to Gravity Forms fields",
                             "field_map" => array(
-                                array("name" => "AccountId","label" => "Account Id","required" => 0),
-                                array("name" => "Brand","label" => "Brand","required" => 0),
-                                array("name" => "Campaign","label" => "Campaign","required" => 0),
-                                array("name" => "CampaignId","label" => "Campaign Id","required" => 0),
-                                array("name" => "DealerId","label" => "Dealer Id","required" => 0),
-                                array("name" => "DealerNumber","label" => "Dealer Number","required" => 0),
-                                array("name" => "ExactTargetOptInListIds","label" => "Exact Target Opt-In List Ids","required" => 0),
-                                array("name" => "ExactTargetCustomAttributes","label" => "Exact Target Custom Attributes","required" => 0),
-                                array("name" => "LeadDate","label" => "Lead Date","required" => 0),
-                                array("name" => "ProductCode","label" => "Product Code","required" => 0),
-                                array("name" => "TriggeredSend","label" => "Triggered Send","required" => 0),
-                                array("name" => "ProductIdList","label" => "<code>Product Id List</code><br /><small>Which product are you interested in purchasing most?</small>","required" => 0),
+                                array("name" => "SourceURL","label" => "Source URL","required" => 0),
+                                array("name" => "RefURL","label" => "Referer URL","required" => 0),
+                                array("name" => "UserIP","label" => "User IP","required" => 0),
+                                array("name" => "UserAgent","label" => "User Agent","required" => 0),
                             ),
                         ),
-                        array(
-                            "name" => "nesMappedFields_CustomData",
-                            "label" => "Map Custom Data Fields",
-                            "type" => "field_map",
-                            "tooltip" => "Map Lead Enrichment Fields to Gravity Forms Form Fields",
-                            "field_map" => array(
-                                array("name" => "PromoCode","label" => "<code>Promo Code</code>","required" => 0),
-                                array("name" => "Event","label" => "<code>Event</code>","required" => 0),
-                                array("name" => "CurrentlyOwn","label" => "<code>Currently Own</code><br /><small>Do you currently own or have you ever owned a hot tub?</small>","required" => 0),
-                                array("name" => "InterestedInOwning","label" => "<code>Interested In Owning</code><br /><small>Are you interested in owning a hot tub? (yes / no)</small><br /><small>For <i>Product Interest In</i> see additional fields above</small>","required" => 0),
-                                array("name" => "BuyTimeFrame","label" => "<code>Buy Time Frame</code><br /><small>When do you plan to purchase?</small>","required" => 0),
-                                array("name" => "HomeOwner","label" => "<code>Home Owner</code><br /><small>Are you a home owner?</small>","required" => 0),
-                                array("name" => "ProductUse","label" => "<code>Product Use</code><br /><small>What is the primary reason you are considering purchase?</small>","required" => 0),
-                                array("name" => "TradeInMake","label" => "<code>Trade In Make</code>","required" => 0),
-                                array("name" => "TradeInYear","label" => "<code>Trade In Year</code>","required" => 0),
-                                array("name" => "Condition","label" => "<code>Trade In Condition</code>","required" => 0),
-                                array("name" => "PayoffLeft","label" => "<code>Payoff Left</code>","required" => 0),
-                            )
-                        ),
-
-                    )
-                ),
-                array(
-                    "title"  => "Web Session Data",
-                    "fields" => array(
-                        array(
-                            "label"   => "Medium / Source",
-                            "type"    => "text",
-                            "name"    => "nesMediumSource",
-                            "tooltip" => "For example \"Adwords\". Use conditional settings below to process feed accordingly.",
-                            "class"   => "small"
-                        )
                     )
                 ),
                 array(
@@ -252,6 +224,15 @@ if (class_exists("GFForms")) {
         }
 
         /**
+         *  Change numeric field to textual output on overview page for human readability
+         *
+         **/
+        public function get_column_value_nesRun($feed) {
+            $output = ( $feed["meta"]["nesRun"] == 1 ) ? 'Now' : ( ( $feed["meta"]["nesRun"] == 2 ) ? 'Later' : 'None' );
+            return "<b>" . $output ."</b>";
+        }
+
+        /**
          *  Plugin Settings Fields
          *
          *  These setting apply to entire plugin, not just individual feeds
@@ -298,9 +279,9 @@ if (class_exists("GFForms")) {
                             "type"    => "radio",
                             "class"   => "small",
                             "choices" => array(
-                                array("label" => "Now", "value" => "now"),
-                                array("label" => "Later", "value" => "later"),
-                                array("label" => "Never", "value" => "never"),
+                                array("label" => "Now", "value" => 1),
+                                array("label" => "Later", "value" => 2),
+                                array("label" => "Never", "value" => 0),
                             )
                         ),
                         array(
