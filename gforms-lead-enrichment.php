@@ -514,7 +514,7 @@ if (class_exists("GFForms")) {
                             "class"   => "small"
                         ),
                         array(
-                            "name"    => "avala_debugMode",
+                            "name"    => "nes_debugMode",
                             "tooltip" => "Show debug arrays on all form submits",
                             "label"   => "Debug Mode",
                             "type"    => "radio",
@@ -527,67 +527,6 @@ if (class_exists("GFForms")) {
                     ),
                 ),
             );
-        }
-
-        /**
-         *  Plugin Scripts
-         *
-         *  Call scripts that we may want to run on form pages
-         *
-         **/
-        public function scripts() {
-            $scripts = array(
-                array("handle"  => "avala_api_script_js",
-                      "src"     => $this->get_base_url() . "/js/avala_api_script.js",
-                      "version" => $this->_version,
-                      "deps"    => array("jquery"),
-                      // [strings] An array of strings that can be accessed in JavaScript through the global variable [script handle]_strings
-                      "strings" => array(
-                          'first'  => __("First Choice", "avala-api-gforms-feed"),
-                          'second' => __("Second Choice", "avala-api-gforms-feed"),
-                          'third'  => __("Third Choice", "avala-api-gforms-feed")
-                      ),
-                      "enqueue" => array(
-                          array(
-                              "admin_page" => array("form_settings"),
-                              "tab"        => "avala-api-gforms-feed"
-                          )
-                      )
-                ),
-
-            );
-
-            return array_merge(parent::scripts(), $scripts);
-        }
-
-        /**
-         *  Plugin Styles
-         *
-         *  Call styles that we may want apply on form pages
-         *
-         **/
-        public function styles() {
-
-            $styles = array(
-                // call style on the admin page: form-editor
-                // for example, in this case we change the color of Avala specific advanced form fields (for differentiation)
-                array("handle"  => "avala_api_styles_form_edit_css",
-                      "src"     => $this->get_base_url() . "/css/avala_api_styles_form_edit.css",
-                      "version" => $this->_version,
-                      "enqueue" => array(
-                          array("admin_page" => array("form_editor"))
-                      )
-                ),
-                array("handle"  => "avala_api_styles_frontend_css",
-                      "src"     => $this->get_base_url() . "/css/avala_api_styles_frontend.css",
-                      "version" => $this->_version,
-                      "enqueue" => array(
-                          array("admin_page" => array("results"))
-                      )
-                )
-            );
-
-            return array_merge(parent::styles(), $styles);
         }
 
         /**
@@ -673,7 +612,7 @@ if (class_exists("GFForms")) {
                     'PromoCode'                 => '',
                     'Event'                     => '',
                     ),
-                //mapped fields - websession data
+                /*mapped fields - websession data
                 'WebSessionData'                => array(
                     'DeliveryMethod'            => '',
                     'FormPage'                  => $entry['source_url'],
@@ -686,6 +625,7 @@ if (class_exists("GFForms")) {
                     'Useragent'                 => $entry['user_agent'],
                     'VisitCount'                => ( isset($ga_cookie['visits']) && !empty($ga_cookie['visits']) ) ? $ga_cookie['visits'] : 1,
                     ),
+                */
             );
 
             // iterate over meta data mapped fields (from feed fields) and apply to the big array above
@@ -724,14 +664,14 @@ if (class_exists("GFForms")) {
             $result = array( 0 => $httpResult, 1 => $apiResult );
 
             // debug things
-            if ( $this->get_plugin_setting('avala_debugMode') == 1 )
+            if ( $this->get_plugin_setting('nes_debugMode') == 1 )
             {
                 $this->_avala_result['cURL'] = $result;
                 $this->_avala_result['JSON'] = $jsonArray;
                 $this->_avala_result['FEED'] = $feed;
                 $this->_avala_result['ENTRY'] = $entry;
-                add_action('wp_footer', array( $this, 'avala_debug') );
-                add_filter("gform_confirmation", "avala_debug_confirm", 10, 4);
+                add_action('wp_footer', array( $this, 'nes_debug') );
+                add_filter("gform_confirmation", "nes_debug_confirm", 10, 4);
             }
 
         }
@@ -744,10 +684,10 @@ if (class_exists("GFForms")) {
          **/
 
         // Debug builder
-        public function avala_debug()
+        public function nes_debug()
         {
             $arrays = $this->_avala_result;
-            $o = '<div id="avala-gform-debug" class=""><h3>Avala Debug Details</h3><hr>';
+            $o = '<div id="avala-gform-debug" class=""><h3>Lead Enrichment Debug Details</h3><hr>';
             foreach ($arrays as $array => $value)
             {
                 $o .='<h4>'.$array.'</h4><pre>'.print_r($value, true).'</pre><hr>';
@@ -756,10 +696,10 @@ if (class_exists("GFForms")) {
             if ( current_user_can( 'activate_plugins' ) )
                 print($o);
         }
-        public function avala_debug_confirm($confirmation, $form, $lead, $ajax)
+        public function nes_debug_confirm($confirmation, $form, $lead, $ajax)
         {
             $arrays = $this->_avala_result;
-            $o = '<div id="avala-gform-debug" class="avala_confirm"><h3>Avala Debug Details</h3><hr>';
+            $o = '<div id="avala-gform-debug" class="avala_confirm"><h3>Lead Enrichment Debug Details</h3><hr>';
             foreach ($arrays as $array => $value)
             {
                 $o .='<h4>'.$array.'</h4><pre>'.print_r($value, true).'</pre><hr>';
@@ -777,7 +717,7 @@ if (class_exists("GFForms")) {
             $keys = array('domain', 'timestamp', 'visits', 'sources', 'campaign', 'source', 'medium', 'keyword');
             return array_combine($keys, $values);
         }
-
+        /*
         // get pages viewed from cookie
         public function get_pages_viewed( $pages = true )
         {
@@ -808,6 +748,7 @@ if (class_exists("GFForms")) {
             }
             return false; // if nlk-custom-shortcodes plugin not installed OR cookie is empty
         }
+
         public function get_page_views()
         {
             return $this->get_pages_viewed(false);
@@ -825,6 +766,7 @@ if (class_exists("GFForms")) {
             }
             return false;
         }
+        */
 
         // Phone number formatter
         public function format_phone( $phone = '', $format='standard', $convert = true, $trim = true )
@@ -911,165 +853,6 @@ if (class_exists("GFForms")) {
          **/
     }
 
-
-
     // Instantiate the class - this triggers everything, makes the magic happen
     $gfa = new GFLeadEnrichmentAddOn();
-
-
-    /**
-     *  Custom Gravity Form Fields
-     *
-     *  The following fields added are Avala specific fields
-     *
-     **/
-    if ( $gfa )
-    {
-        /**
-         *  Product ID List - Custom Advanced Field
-         *
-         */
-        if ( !empty( $gfa->_custom_product_id_list ) )
-        {
-            add_action( "gform_field_input" , "avala_field_product_id_input", 10, 5 );
-            function avala_field_product_id_input( $input, $field, $value, $lead_id, $form_id ) {
-                global $gfa;
-                if ( $field["type"] == "avalaFieldProductId" ) {
-                    $options = explode( "\r\n", $gfa->_custom_product_id_list );
-                    $opts = '';
-                    foreach ($options as $option) {
-                        $o = explode(',', $option);
-                        //$selected = ( trim($o[1]) == $value || trim($o[0]) == $value ) ? 'selected="selected"' : '';
-                        $opts .= '<option value="' . trim($o[1]) . '" >' . trim($o[0]) . '</option>';
-                    }
-                    $input_name = $form_id .'_' . $field["id"];
-                    $tabindex = GFCommon::get_tabindex();
-                    $css = isset( $field['cssClass'] ) ? $field['cssClass'] : '';
-                    return sprintf("<div class=\"ginput_container\"><select name=\"%s\" id=\"%s\" class=\"%s gfield_select\" $tabindex >%s</select></div>", 'input_'.$field["id"], 'input_'.$input_name, $field["type"] . ' ' . esc_attr( $css ) . ' ' . $field['size'], $opts);
-                }
-                return $input;
-            }
-        }
-
-        /**
-         *  Purchase Timeframe - Custom Advanced Field
-         *
-         */
-        add_action( "gform_field_input" , "avala_field_purchase_timeframe_input", 10, 5 );
-        function avala_field_purchase_timeframe_input( $input, $field, $value, $lead_id, $form_id )
-        {
-            if ( $field["type"] == "avalaFieldPurchaseTimeframe" ) {
-                $input_name = $form_id .'_' . $field["id"];
-                $tabindex = GFCommon::get_tabindex();
-                $css = isset( $field['cssClass'] ) ? $field['cssClass'] : '';
-                $opts = '<option value="">Not Selected</option>
-                        <option value="Within 1 month">Within 1 month</option>
-                        <option value="1-3 months">1-3 months</option>
-                        <option value="4-6 months">4-6 months</option>
-                        <option value="6+ months">6+ months</option>';
-                return sprintf("<div class=\"ginput_container\"><select name=\"%s\" id=\"%s\" class=\"%s gfield_select\" $tabindex >%s</select></div>", 'input_'.$field["id"], 'input_'.$input_name, $field["type"] . ' ' . esc_attr( $css ) . ' ' . $field['size'], $opts);
-            }
-            return $input;
-        }
-
-        /**
-         *  Product Use - Custom Advanced Field
-         *
-         */
-        add_action( "gform_field_input" , "avala_field_product_use_input", 10, 5 );
-        function avala_field_product_use_input( $input, $field, $value, $lead_id, $form_id )
-        {
-            if ( $field["type"] == "avalaFieldProductUse" ) {
-                $input_name = $form_id .'_' . $field["id"];
-                $tabindex = GFCommon::get_tabindex();
-                $css = isset( $field['cssClass'] ) ? $field['cssClass'] : '';
-                $opts = '<option value="">Not Selected</option>
-                        <option value="Relaxation">Relaxation</option>
-                        <option value="Pain Relief/Therapy">Pain Relief/Therapy</option>
-                        <option value="Bonding/Family">Bonding/Family</option>
-                        <option value="Backyard Entertaining">Backyard Entertaining</option>';
-                return sprintf("<div class=\"ginput_container\"><select name=\"%s\" id=\"%s\" class=\"%s gfield_select\" $tabindex >%s</select></div>", 'input_'.$field["id"], 'input_'.$input_name, $field["type"] . ' ' . esc_attr( $css ) . ' ' . $field['size'], $opts);
-            }
-            return $input;
-        }
-
-        /**
-         *  This code adds new buttons to the Advanced Fields section in form creator
-         */
-        add_filter("gform_add_field_buttons", "add_avala_product_id_field");
-        function add_avala_product_id_field($field_groups)
-        {
-            foreach($field_groups as &$group)
-            {
-                if($group["name"] == "advanced_fields")
-                {
-                    $group["fields"][] = array(
-                        "class"=>"button avala-button",
-                        "value" => __("Select Product", "avala-api-gforms-feed"),
-                        "onclick" => "StartAddField('avalaFieldProductId');"
-                        );
-                    $group["fields"][] = array(
-                        "class"=>"button avala-button",
-                        "value" => __("Buy Timeframe", "avala-api-gforms-feed"),
-                        "onclick" => "StartAddField('avalaFieldPurchaseTimeframe');"
-                        );
-                    $group["fields"][] = array(
-                        "class"=>"button avala-button",
-                        "value" => __("Product Use", "avala-api-gforms-feed"),
-                        "onclick" => "StartAddField('avalaFieldProductUse');"
-                        );
-                    break;
-                }
-            }
-            return $field_groups;
-        }
-
-        /**
-         *  This block sets the field display name (left side block title) in form creator
-         */
-        add_filter( 'gform_field_type_title' , 'avala_field_titles' );
-        function avala_field_titles( $type )
-        {
-            switch( $type )
-            {
-                case 'avalaFieldProductUse':
-                    return __( 'Select Product Use' , 'avala-api-gforms-feed' );
-                    break;
-                case 'avalaFieldPurchaseTimeframe':
-                    return __( 'Select Purchase Timeframe' , 'avala-api-gforms-feed' );
-                    break;
-                case 'avalaFieldProductId':
-                    return __( 'Select Product ID' , 'avala-api-gforms-feed' );
-                    break;
-            }
-        }
-
-        /*
-         *  Javascript technicalitites for the field to load correctly and to display default/custom field options
-         */
-        add_action( "gform_editor_js", "avala_field_gform_editor_js" );
-        function avala_field_gform_editor_js()
-        {
-            ?>
-            <script type='text/javascript'>
-                jQuery(document).ready(function($){
-                    fieldSettings["avalaFieldProductId"] = ".label_setting, .description_setting, .admin_label_setting, .size_setting, .error_message_setting, .css_class_setting, .visibility_setting, .avalaConditional_logic_field_setting";
-                    fieldSettings["avalaFieldProductUse"] = ".label_setting, .description_setting, .admin_label_setting, .size_setting, .error_message_setting, .css_class_setting, .visibility_setting, .avalaConditional_logic_field_setting";
-                    fieldSettings["avalaFieldPurchaseTimeframe"] = ".label_setting, .description_setting, .admin_label_setting, .size_setting, .error_message_setting, .css_class_setting, .visibility_setting, .avalaConditional_logic_field_setting";
-                });
-            </script>
-            <?php
-        }
-    }
-
-
-    // Rewrite Gravity Forms field Country (select values) as Country Codes instead of country name :: eg CA instead of Canada
-    // This is necessary for Avala API to understand data
-    // An alternative would be to use a filter function to do this during Feed Processing, but here we can also set US and CA as our top two choices
-    add_filter("gform_countries", "change_countries");
-    function change_countries($countries)
-    {
-        return array( "US" => __('UNITED STATES', 'gravityforms'), "CA" => __('CANADA', 'gravityforms'), "AF" => __('AFGHANISTAN', 'gravityforms'), "AL" => __('ALBANIA', 'gravityforms'), "DZ" => __('ALGERIA', 'gravityforms'), "AS" => __('AMERICAN SAMOA', 'gravityforms'), "AD" => __('ANDORRA', 'gravityforms'), "AO" => __('ANGOLA', 'gravityforms'), "AG" => __('ANTIGUA AND BARBUDA', 'gravityforms'), "AR" => __('ARGENTINA', 'gravityforms'), "AM" => __('ARMENIA', 'gravityforms'), "AU" => __('AUSTRALIA', 'gravityforms'), "AT" => __('AUSTRIA', 'gravityforms'), "AZ" => __('AZERBAIJAN', 'gravityforms'), "BS" => __('BAHAMAS', 'gravityforms'), "BH" => __('BAHRAIN', 'gravityforms'), "BD" => __('BANGLADESH', 'gravityforms'), "BB" => __('BARBADOS', 'gravityforms'), "BY" => __('BELARUS', 'gravityforms'), "BE" => __('BELGIUM', 'gravityforms'), "BZ" => __('BELIZE', 'gravityforms'), "BJ" => __('BENIN', 'gravityforms'), "BM" => __('BERMUDA', 'gravityforms'), "BT" => __('BHUTAN', 'gravityforms'), "BO" => __('BOLIVIA', 'gravityforms'), "BA" => __('BOSNIA AND HERZEGOVINA', 'gravityforms'), "BW" => __('BOTSWANA', 'gravityforms'), "BR" => __('BRAZIL', 'gravityforms'), "BN" => __('BRUNEI', 'gravityforms'), "BG" => __('BULGARIA', 'gravityforms'), "BF" => __('BURKINA FASO', 'gravityforms'), "BI" => __('BURUNDI', 'gravityforms'), "KH" => __('CAMBODIA', 'gravityforms'), "CM" => __('CAMEROON', 'gravityforms'), "CA" => __('CANADA', 'gravityforms'), "CV" => __('CAPE VERDE', 'gravityforms'), "KY" => __('CAYMAN ISLANDS', 'gravityforms'), "CF" => __('CENTRAL AFRICAN REPUBLIC', 'gravityforms'), "TD" => __('CHAD', 'gravityforms'), "CL" => __('CHILE', 'gravityforms'), "CN" => __('CHINA', 'gravityforms'), "CO" => __('COLOMBIA', 'gravityforms'), "KM" => __('COMOROS', 'gravityforms'), "CD" => __('CONGO, DEMOCRATIC REPUBLIC OF THE', 'gravityforms'), "CG" => __('CONGO, REPUBLIC OF THE', 'gravityforms'), "CR" => __('COSTA RICA', 'gravityforms'), "CI" => __('C&OCIRC;TE D\'IVOIRE', 'gravityforms'), "HR" => __('CROATIA', 'gravityforms'), "CU" => __('CUBA', 'gravityforms'), "CY" => __('CYPRUS', 'gravityforms'), "CZ" => __('CZECH REPUBLIC', 'gravityforms'), "DK" => __('DENMARK', 'gravityforms'), "DJ" => __('DJIBOUTI', 'gravityforms'), "DM" => __('DOMINICA', 'gravityforms'), "DO" => __('DOMINICAN REPUBLIC', 'gravityforms'), "TL" => __('EAST TIMOR', 'gravityforms'), "EC" => __('ECUADOR', 'gravityforms'), "EG" => __('EGYPT', 'gravityforms'), "SV" => __('EL SALVADOR', 'gravityforms'), "GQ" => __('EQUATORIAL GUINEA', 'gravityforms'), "ER" => __('ERITREA', 'gravityforms'), "EE" => __('ESTONIA', 'gravityforms'), "ET" => __('ETHIOPIA', 'gravityforms'), "FJ" => __('FIJI', 'gravityforms'), "FI" => __('FINLAND', 'gravityforms'), "FR" => __('FRANCE', 'gravityforms'), "GA" => __('GABON', 'gravityforms'), "GM" => __('GAMBIA', 'gravityforms'), "GE" => __('GEORGIA', 'gravityforms'), "DE" => __('GERMANY', 'gravityforms'), "GH" => __('GHANA', 'gravityforms'), "GR" => __('GREECE', 'gravityforms'), "GL" => __('GREENLAND', 'gravityforms'), "GD" => __('GRENADA', 'gravityforms'), "GU" => __('GUAM', 'gravityforms'), "GT" => __('GUATEMALA', 'gravityforms'), "GN" => __('GUINEA', 'gravityforms'), "GW" => __('GUINEA-BISSAU', 'gravityforms'), "GY" => __('GUYANA', 'gravityforms'), "HT" => __('HAITI', 'gravityforms'), "HN" => __('HONDURAS', 'gravityforms'), "HK" => __('HONG KONG', 'gravityforms'), "HU" => __('HUNGARY', 'gravityforms'), "IS" => __('ICELAND', 'gravityforms'), "IN" => __('INDIA', 'gravityforms'), "ID" => __('INDONESIA', 'gravityforms'), "IR" => __('IRAN', 'gravityforms'), "IQ" => __('IRAQ', 'gravityforms'), "IE" => __('IRELAND', 'gravityforms'), "IL" => __('ISRAEL', 'gravityforms'), "IT" => __('ITALY', 'gravityforms'), "JM" => __('JAMAICA', 'gravityforms'), "JP" => __('JAPAN', 'gravityforms'), "JO" => __('JORDAN', 'gravityforms'), "KZ" => __('KAZAKHSTAN', 'gravityforms'), "KE" => __('KENYA', 'gravityforms'), "KI" => __('KIRIBATI', 'gravityforms'), "KP" => __('NORTH KOREA', 'gravityforms'), "KR" => __('SOUTH KOREA', 'gravityforms'), "KV" => __('KOSOVO', 'gravityforms'), "KW" => __('KUWAIT', 'gravityforms'), "KG" => __('KYRGYZSTAN', 'gravityforms'), "LA" => __('LAOS', 'gravityforms'), "LV" => __('LATVIA', 'gravityforms'), "LB" => __('LEBANON', 'gravityforms'), "LS" => __('LESOTHO', 'gravityforms'), "LR" => __('LIBERIA', 'gravityforms'), "LY" => __('LIBYA', 'gravityforms'), "LI" => __('LIECHTENSTEIN', 'gravityforms'), "LT" => __('LITHUANIA', 'gravityforms'), "LU" => __('LUXEMBOURG', 'gravityforms'), "MK" => __('MACEDONIA', 'gravityforms'), "MG" => __('MADAGASCAR', 'gravityforms'), "MW" => __('MALAWI', 'gravityforms'), "MY" => __('MALAYSIA', 'gravityforms'), "MV" => __('MALDIVES', 'gravityforms'), "ML" => __('MALI', 'gravityforms'), "MT" => __('MALTA', 'gravityforms'), "MH" => __('MARSHALL ISLANDS', 'gravityforms'), "MR" => __('MAURITANIA', 'gravityforms'), "MU" => __('MAURITIUS', 'gravityforms'), "MX" => __('MEXICO', 'gravityforms'), "FM" => __('MICRONESIA', 'gravityforms'), "MD" => __('MOLDOVA', 'gravityforms'), "MC" => __('MONACO', 'gravityforms'), "MN" => __('MONGOLIA', 'gravityforms'), "ME" => __('MONTENEGRO', 'gravityforms'), "MA" => __('MOROCCO', 'gravityforms'), "MZ" => __('MOZAMBIQUE', 'gravityforms'), "MM" => __('MYANMAR', 'gravityforms'), "NA" => __('NAMIBIA', 'gravityforms'), "NR" => __('NAURU', 'gravityforms'), "NP" => __('NEPAL', 'gravityforms'), "NL" => __('NETHERLANDS', 'gravityforms'), "NZ" => __('NEW ZEALAND', 'gravityforms'), "NI" => __('NICARAGUA', 'gravityforms'), "NE" => __('NIGER', 'gravityforms'), "NG" => __('NIGERIA', 'gravityforms'), "MP" => __('NORTHERN MARIANA ISLANDS', 'gravityforms'), "NO" => __('NORWAY', 'gravityforms'), "OM" => __('OMAN', 'gravityforms'), "PK" => __('PAKISTAN', 'gravityforms'), "PW" => __('PALAU', 'gravityforms'), "PS" => __('PALESTINE', 'gravityforms'), "PA" => __('PANAMA', 'gravityforms'), "PG" => __('PAPUA NEW GUINEA', 'gravityforms'), "PY" => __('PARAGUAY', 'gravityforms'), "PE" => __('PERU', 'gravityforms'), "PH" => __('PHILIPPINES', 'gravityforms'), "PL" => __('POLAND', 'gravityforms'), "PT" => __('PORTUGAL', 'gravityforms'), "PR" => __('PUERTO RICO', 'gravityforms'), "QA" => __('QATAR', 'gravityforms'), "RO" => __('ROMANIA', 'gravityforms'), "RU" => __('RUSSIA', 'gravityforms'), "RW" => __('RWANDA', 'gravityforms'), "KN" => __('SAINT KITTS AND NEVIS', 'gravityforms'), "LC" => __('SAINT LUCIA', 'gravityforms'), "VC" => __('SAINT VINCENT AND THE GRENADINES', 'gravityforms'), "WS" => __('SAMOA', 'gravityforms'), "SM" => __('SAN MARINO', 'gravityforms'), "ST" => __('SAO TOME AND PRINCIPE', 'gravityforms'), "SA" => __('SAUDI ARABIA', 'gravityforms'), "SN" => __('SENEGAL', 'gravityforms'), "RS" => __('SERBIA AND MONTENEGRO', 'gravityforms'), "SC" => __('SEYCHELLES', 'gravityforms'), "SL" => __('SIERRA LEONE', 'gravityforms'), "SG" => __('SINGAPORE', 'gravityforms'), "SK" => __('SLOVAKIA', 'gravityforms'), "SI" => __('SLOVENIA', 'gravityforms'), "SB" => __('SOLOMON ISLANDS', 'gravityforms'), "SO" => __('SOMALIA', 'gravityforms'), "ZA" => __('SOUTH AFRICA', 'gravityforms'), "ES" => __('SPAIN', 'gravityforms'), "LK" => __('SRI LANKA', 'gravityforms'), "SD" => __('SUDAN', 'gravityforms'), "SS" => __('SUDAN, SOUTH', 'gravityforms'), "SR" => __('SURINAME', 'gravityforms'), "SZ" => __('SWAZILAND', 'gravityforms'), "SE" => __('SWEDEN', 'gravityforms'), "CH" => __('SWITZERLAND', 'gravityforms'), "SY" => __('SYRIA', 'gravityforms'), "TW" => __('TAIWAN', 'gravityforms'), "TJ" => __('TAJIKISTAN', 'gravityforms'), "TZ" => __('TANZANIA', 'gravityforms'), "TH" => __('THAILAND', 'gravityforms'), "TG" => __('TOGO', 'gravityforms'), "TO" => __('TONGA', 'gravityforms'), "TT" => __('TRINIDAD AND TOBAGO', 'gravityforms'), "TN" => __('TUNISIA', 'gravityforms'), "TR" => __('TURKEY', 'gravityforms'), "TM" => __('TURKMENISTAN', 'gravityforms'), "TV" => __('TUVALU', 'gravityforms'), "UG" => __('UGANDA', 'gravityforms'), "UA" => __('UKRAINE', 'gravityforms'), "AE" => __('UNITED ARAB EMIRATES', 'gravityforms'), "GB" => __('UNITED KINGDOM', 'gravityforms'), "US" => __('UNITED STATES', 'gravityforms'), "UY" => __('URUGUAY', 'gravityforms'), "UZ" => __('UZBEKISTAN', 'gravityforms'), "VU" => __('VANUATU', 'gravityforms'), "VC" => __('VATICAN CITY', 'gravityforms'), "VE" => __('VENEZUELA', 'gravityforms'), "VG" => __('VIRGIN ISLANDS, BRITISH', 'gravityforms'), "VI" => __('VIRGIN ISLANDS, U.S.', 'gravityforms'), "VN" => __('VIETNAM', 'gravityforms'), "YE" => __('YEMEN', 'gravityforms'), "ZM" => __('ZAMBIA', 'gravityforms'), "ZW" => __('ZIMBABWE', 'gravityforms'), );
-    }
-
 }
