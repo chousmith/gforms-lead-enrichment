@@ -229,16 +229,16 @@ if (class_exists("GFForms")) {
         public function feed_list_columns() {
             // #todo
             return array(
-                'avalaFeedName' => __('Name', 'gforms-lead-enrichment'),
-                'avalaApiFeedSubmit' => __('Submit To', 'gforms-lead-enrichment'),
-                'avalaLeadsourcename' => __('Lead Source', 'gforms-lead-enrichment'),
-                'avalaLeadcategoryname' => __('Lead Category', 'gforms-lead-enrichment'),
-                'avalaLeadtypename' => __('Lead Type', 'gforms-lead-enrichment'),
-                'avalaCondition' => __('Condition(s)', 'gforms-lead-enrichment'),
+                'nesAd' => __('Ad/Action', 'gforms-lead-enrichment'),
+                'nesRun' => __('Enrich', 'gforms-lead-enrichment'),
+                // 'avalaLeadsourcename' => __('Lead Source', 'gforms-lead-enrichment'),
+                // 'avalaLeadcategoryname' => __('Lead Category', 'gforms-lead-enrichment'),
+                // 'avalaLeadtypename' => __('Lead Type', 'gforms-lead-enrichment'),
+                'nesCondition' => __('Condition(s)', 'gforms-lead-enrichment'),
             );
         }
         // customize the value of mytext before it is rendered to the list
-        public function get_column_value_avalaCondition( $feed ){
+        public function get_column_value_nesCondition( $feed ){
             $output = 'N/A';
             $rules = array();
             if ( $feed['meta']['feed_condition_conditional_logic'] == 1 ) {
@@ -249,15 +249,6 @@ if (class_exists("GFForms")) {
                 $output = implode(', ' . $andor . ' ', $rules);
             }
             return $output;
-        }
-
-        /**
-         *  Change numeric field to textual output on overview page for human readability
-         *
-         **/
-        public function get_column_value_avalaApiFeedSubmit($feed) {
-            $output = ( $feed["meta"]["avalaApiFeedSubmit"] == 1 ) ? 'Live' : ( ( $feed["meta"]["avalaApiFeedSubmit"] == 2 ) ? 'Dev' : 'N/A' );
-            return "<b>" . $output ."</b>";
         }
 
         /**
