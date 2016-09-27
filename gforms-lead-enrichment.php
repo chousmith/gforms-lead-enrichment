@@ -116,7 +116,7 @@ if (class_exists("GFForms")) {
                             "field_map" => array(
                                 array("name" => "FirstName","label" => "First Name","required" => 0),
                                 array("name" => "LastName","label" => "Last Name","required" => 0),
-                                array("name" => "Email","label" => "Email Address","required" => 0),
+                                array("name" => "Email","label" => "Email","required" => 0),
                                 array("name" => "Phone","label" => "Phone","required" => 0),
                             )
                         ),
@@ -127,11 +127,11 @@ if (class_exists("GFForms")) {
                             "tooltip" => "Map Lead Enrichment fields to Gravity Forms fields",
                             "field_map" => array(
                                 array("name" => "Address1","label" => "Address","required" => 0),
-                                array("name" => "Address2","label" => "Address (line 2)","required" => 0),
+                                array("name" => "Address2","label" => "Address Line 2","required" => 0),
                                 array("name" => "City","label" => "City","required" => 0),
                                 array("name" => "State","label" => "State","required" => 0),
                                 array("name" => "Country","label" => "Country","required" => 0),
-                                array("name" => "PostalCode","label" => "Zip / Postal Code","required" => 0),
+                                array("name" => "PostalCode","label" => "ZIP / Postal Code","required" => 0),
                                 array("name" => "AddressInput","label" => "Address Input","required" => 0),
                             )
                         ),
@@ -142,7 +142,7 @@ if (class_exists("GFForms")) {
                             "tooltip" => "Map Lead Enrichment fields to Gravity Forms fields",
                             "field_map" => array(
                                 array("name" => "SourceURL","label" => "Source URL","required" => 0),
-                                array("name" => "RefURL","label" => "Referer URL","required" => 0),
+                                array("name" => "RefURL","label" => "Referer","required" => 0),
                                 array("name" => "UserIP","label" => "User IP","required" => 0),
                                 array("name" => "UserAgent","label" => "User Agent","required" => 0),
                             ),
