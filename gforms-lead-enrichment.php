@@ -52,9 +52,9 @@ if (class_exists("GFForms")) {
                     You will need the following:
                     <ol style="margin-left: 20px;">
                         <li>Ninthlink Enrichment System API Endpoint URL</li>
-                        <li>Ninthlink Enrichment System Public API Key</li>
-                        <li>Ninthlink Enrichment System Private API Key</li>
-                        <li>Ninthlink Enrichment System Site ID</li>
+                        <!-- <li>Ninthlink Enrichment System Public API Key</li>
+                        <li>Ninthlink Enrichment System Private API Key</li> -->
+                        <li>Ninthlink Enrichment System Site ID Key</li>
                         <li>Whether to run Enrichment right away or not (can be overriden in individual form feed settings)</li>
                         <!-- <li>Any custom lead categories, sources, and types not included in this plugin defaults</li>
                         <li>Your product ID list - this can be exported directly from Aimbase</li>
@@ -249,6 +249,7 @@ if (class_exists("GFForms")) {
                             "type"    => "text",
                             "class"   => "medium"
                         ),
+                        /*
                         array(
                             "name"    => "nes_pubKey",
                             "tooltip" => "Ninthlink Enrichment System Public API Key",
@@ -263,10 +264,11 @@ if (class_exists("GFForms")) {
                             "type"    => "text",
                             "class"   => "medium"
                         ),
+                        */
                         array(
                             "name"    => "nes_siteID",
-                            "tooltip" => "The particular Site ID for this WordPress site ". esc_url( site_url() ),
-                            "label"   => "Site ID",
+                            "tooltip" => "The particular Site ID Key for this WordPress site ". esc_url( site_url() ),
+                            "label"   => "Site ID Key",
                             "type"    => "text",
                             "class"   => "medium"
                         ),
@@ -329,58 +331,55 @@ if (class_exists("GFForms")) {
             if ( isset($_COOKIE['__utmz']) && !empty($_COOKIE['__utmz']) )
                 $ga_cookie = $this->parse_ga_cookie( $_COOKIE['__utmz'] );
 
-            // full data array for Lead Enrichment, with some default values
-            $jsonArray = array(
-                'LeadSourceName'                => $feed['meta']['avalaLeadsourcename'],
-                'LeadTypeName'                  => $feed['meta']['avalaLeadtypename'],
-                'LeadCategoryName'              => $feed['meta']['avalaLeadcategoryname'],
-                //mapped fields - contact
-                'FirstName'                     => is_user_logged_in() ? $current_user->user_firstname : '',
-                'LastName'                      => is_user_logged_in() ? $current_user->user_lastname : '',
-                'Email'                         => is_user_logged_in() ? $current_user->user_email : '',
-                'Phone'                         => '',
-                //mapped fields - address
-                'Address1'                      => '',
-                'Address2'                      => '',
-                'City'                          => '',
-                'State'                         => '',
-                'County'                        => '',
-                'District'                      => '',
-                'Country'                       => '',
-                'Zip'                           => '',
-                /*mapped fields - websession data
-                'WebSessionData'                => array(
-                    'DeliveryMethod'            => '',
-                    'FormPage'                  => $entry['source_url'],
-                    'IPaddress'                 => $entry['ip'],
-                    'KeyWords'                  => ( isset($ga_cookie['keyword']) && !empty($ga_cookie['keyword']) ) ? $ga_cookie['keyword'] : '',
-                    'Medium'                    => ( isset($feed['meta']['avalaMediumSource']) ? $feed['meta']['avalaMediumSource'] : ( ( isset($ga_cookie['medium']) && !empty($ga_cookie['medium']) ) ? $ga_cookie['medium'] : '' ) ),
-                    'PagesViewed'               => $this->get_pages_viewed(),
-                    'PageViews'                 => $this->get_page_views(),
-                    'TimeOnSite'                => $this->get_time_on_site(),
-                    'Useragent'                 => $entry['user_agent'],
-                    'VisitCount'                => ( isset($ga_cookie['visits']) && !empty($ga_cookie['visits']) ) ? $ga_cookie['visits'] : 1,
-                    ),
-                */
+            // full data array for Lead Enrichment
+            $jsonObj = new stdClass();
+            $jsonObj->input_values = new stdClass();
+
+            // set the Side ID Key
+            $jsonObj->input_values->input_28 = $this->get_plugin_setting('nes_siteID');
+            // set default Run
+            $jsonObj->input_values->input_29 = $this->get_plugin_setting('nes_defaultEnrichment');
+
+            $input_map = array(
+              'FirstName' => 'input_1_3',
+              'LastName' => 'input_1_6',
+              'Email' => 'input_2',
+              'Phone' => 'input_23',
+              'Address1' => 'input_24_1',
+              'Address2' => 'input_24_2',
+              'City' => 'input_24_3',
+              'State' => 'input_24_4',
+              'PostalCode' => 'input_24_5',
+              'Country' => 'input_24_6',
+              'AddressInput' => 'input_26',
+              'SourceURL' => 'input_5',
+              'RefURL' => 'input_33',
+              'UserIP' => 'input_6',
+              'UserAgent' => 'input_8',
             );
 
             // iterate over meta data mapped fields (from feed fields) and apply to the big array above
             foreach ($feed['meta'] as $k => $v) {
-              $l = explode("_", $k);
-              if ( $l[0] == 'avalaMappedFields' ) {
-                if ( array_key_exists( $l[2], $jsonArray ) && !empty( $v ) ) {
-                  $jsonArray[ $l[2] ] = $entry[ $v ];
+              switch ( $k ) {
+                case 'nesAd':
+                  $jsonObj->input_values->input_10 = $v;
+                  break;
+                case 'nesRun':
+                  $jsonObj->input_values->input_29 = $v;
+                  break;
+                default:
+                  $l = explode("_", $k);
+                  if ( $l[0] == 'nesMappedFields' ) {
+                    if ( array_key_exists( $l[2], $input_map ) && !empty( $v ) ) {
+                      $jsonObj->input_values->$input_map[ $l[2] ] = $entry[ $v ];
+                    }
+                  }
+                  break;
                 }
-              }
             }
 
-            // Remove empty ARRAY fields so we do not submit blank data
-            $jsonArray = array_filter( $jsonArray );
             // json encode to string for sending
-            $jsonString = json_encode( $jsonArray );
-
-            // wrap string in [ ] per Avala API requirements
-            // $jsonString = '[' . jsonString . ']';
+            $jsonString = wp_json_encode( $jsonObj );
 
             // cURL :: this sends off the data
             $ch = curl_init($url);
@@ -399,7 +398,8 @@ if (class_exists("GFForms")) {
             if ( $this->get_plugin_setting('nes_debugMode') == 1 )
             {
                 $this->_nes_result['cURL'] = $result;
-                $this->_nes_result['JSON'] = $jsonArray;
+                $this->_nes_result['JSONOBJ'] = $jsonObj;
+                $this->_nes_result['JSONSTR'] = $jsonString;
                 $this->_nes_result['FEED'] = $feed;
                 $this->_nes_result['ENTRY'] = $entry;
                 add_action('wp_footer', array( $this, 'nes_debug') );
@@ -419,7 +419,8 @@ if (class_exists("GFForms")) {
         public function nes_debug()
         {
             $arrays = $this->_nes_result;
-            $o = '<div id="nes-gform-debug" class=""><h3>Lead Enrichment Debug Details</h3><hr>';
+            $o = '<style type="text/css">#nes-gform-debug { background: #ccc; color: #000 }</style>';
+            $o .= '<div id="nes-gform-debug"><h3>Lead Enrichment Debug Details</h3><hr>';
             foreach ($arrays as $array => $value)
             {
                 $o .='<h4>'.$array.'</h4><pre>'.print_r($value, true).'</pre><hr>';
