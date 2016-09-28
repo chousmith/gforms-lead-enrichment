@@ -615,7 +615,7 @@ if (class_exists("GFForms")) {
         }
 
         /**
-         *  END of AVAL API ADD-ON CLASS
+         *  END of ADD-ON CLASS
          *
          **/
     }
