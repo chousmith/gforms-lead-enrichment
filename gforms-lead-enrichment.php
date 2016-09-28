@@ -26,10 +26,9 @@ if (class_exists("GFForms")) {
         protected $_full_path = __FILE__;
         protected $_title = "Gravity Forms Lead Enrichment";
         protected $_short_title = "Lead Enrichment";
-        protected $_nes_api_endpt = "gravityformsapi/forms/1/submissions";
 
         // custom data vars for use outside class?
-        public $_avala_result = array();
+        public $_nes_result = array();
 
         public $_debug;
 
@@ -80,7 +79,7 @@ if (class_exists("GFForms")) {
         /**
          *  Feed Settings Fields
          *
-         *  Each form uses unique feed settings to connect with Avala. This allows extra refining for each circumstance
+         *  Each form uses unique feed settings to connect for Enrichment.
          *
          **/
         public function feed_settings_fields() {
@@ -156,13 +155,13 @@ if (class_exists("GFForms")) {
                             "name" => "nesCondition",
                             "label" => __("Conditional", "gforms-lead-enrichment"),
                             "type" => "feed_condition",
-                            "checkbox_label" => __('Enable Feed Condition', 'gforms-lead-enrichment'),
-                            "instructions" => __("Process this Avala feed if", "gforms-lead-enrichment")
+                            "checkbox_label" => __("Enable Feed Condition", "gforms-lead-enrichment"),
+                            "instructions" => __("Process this Feed if...", "gforms-lead-enrichment")
                         ),
                     )
                 )
             );
-
+            /*
             // add Custom Lead Source plugin settings field to feed settings field array
             if ( $this->get_plugin_setting('avala_customLeadSource') ) {
                 $custom_lead_source = explode( "\r\n", $this->get_plugin_setting('avala_customLeadSource') );
@@ -189,7 +188,7 @@ if (class_exists("GFForms")) {
                     $a[0]['fields'][4]['choices'][] = array("label" => $value, "value" => $value);
                 }
             }
-
+            */
             return $a;
         }
 
@@ -309,8 +308,7 @@ if (class_exists("GFForms")) {
         public function process_feed($feed, $entry, $form){
 
             // working vars
-            $avalaApiFeedSubmit = $feed['meta']['avalaApiFeedSubmit'];
-            $url = null;
+            //$nesFeedSubmit = $feed['meta']['nesFeedSubmit'];
 
       			// current user info
       			global $current_user;
@@ -321,6 +319,11 @@ if (class_exists("GFForms")) {
             if ( $url == '' ) :
               return false; // do nothing - GForm submits as normal
             endif;
+
+            // else
+            if ( $url != '' ) {
+              $url = trailingslashit( esc_url_raw( $url ) ) ."gravityformsapi/forms/1/submissions";
+            }
 
             // we will use Google Analytics cookies for some data if available
             if ( isset($_COOKIE['__utmz']) && !empty($_COOKIE['__utmz']) )
@@ -334,11 +337,8 @@ if (class_exists("GFForms")) {
                 //mapped fields - contact
                 'FirstName'                     => is_user_logged_in() ? $current_user->user_firstname : '',
                 'LastName'                      => is_user_logged_in() ? $current_user->user_lastname : '',
-                'EmailAddress'                  => is_user_logged_in() ? $current_user->user_email : '',
-                'HomePhone'                     => '',
-                'MobilePhone'                   => '',
-                'WorkPhone'                     => '',
-                'Comments'                      => '',
+                'Email'                         => is_user_logged_in() ? $current_user->user_email : '',
+                'Phone'                         => '',
                 //mapped fields - address
                 'Address1'                      => '',
                 'Address2'                      => '',
@@ -346,39 +346,8 @@ if (class_exists("GFForms")) {
                 'State'                         => '',
                 'County'                        => '',
                 'District'                      => '',
-                'CountryCode'                   => $this->get_plugin_setting('avala_defaultCountry'),
-                'PostalCode'                    => ( $this->get_plugin_setting('avala_defaultPostalCode') != '' ) ? $this->get_plugin_setting('avala_defaultPostalCode') : '00000',
-                //mapped fields - subscription
-                'RecieveEmailCampaigns'         => '',
-                'ReceiveNewsletter'             => '',
-                'ReceiveSmsCampaigns'           => '',
-                //mapped fields - addl data
-                'AccountId'                     => '',
-                'Brand'                         => '',
-                'Campaign'                      => '',
-                'CampaignId'                    => '',
-                'DealerId'                      => '',
-                'DealerNumber'                  => '',
-                'ExactTargetOptInListIds'       => ( $this->get_plugin_setting('avala_defaultOptInListId') ) ? $this->get_plugin_setting('avala_defaultOptInListId') : '',
-                'ExactTargetCustomAttributes'   => '',
-                'LeadDate'                      => '',
-                'ProductCode'                   => '',
-                'ProductIdList'                 => '',
-                'TriggeredSend'                 => '',
-                //mapped fields - custom data
-                'CustomData'                    => array(
-                    'BuyTimeFrame'              => '',
-                    'Condition'                 => '',
-                    'CurrentlyOwn'              => '',
-                    'HomeOwner'                 => '',
-                    'InterestedInOwning'        => '',
-                    'PayoffLeft'                => '',
-                    'ProductUse'                => '',
-                    'TradeInMake'               => '',
-                    'TradeInYear'               => '',
-                    'PromoCode'                 => '',
-                    'Event'                     => '',
-                    ),
+                'Country'                       => '',
+                'Zip'                           => '',
                 /*mapped fields - websession data
                 'WebSessionData'                => array(
                     'DeliveryMethod'            => '',
@@ -397,27 +366,23 @@ if (class_exists("GFForms")) {
 
             // iterate over meta data mapped fields (from feed fields) and apply to the big array above
             foreach ($feed['meta'] as $k => $v) {
-                $l = explode("_", $k);
-                if ( $l[0] == 'avalaMappedFields' ) {
-                    if ( $l[1] == 'CustomData' && array_key_exists( $l[2], $jsonArray['CustomData'] ) && !empty( $v ) ) :
-                        $jsonArray['CustomData'][ $l[2] ] = $entry[ $v ];
-                    elseif ( $l[1] == 'WebSession' && array_key_exists( $l[2], $jsonArray['WebSessionData'] ) && !empty( $v ) ) :
-                        $jsonArray['WebSessionData'][ $l[2] ] = $entry[ $v ];
-                    elseif ( array_key_exists( $l[2], $jsonArray ) && !empty( $v ) ) :
-                        $jsonArray[ $l[2] ] = $entry[ $v ];
-                    endif;
+              $l = explode("_", $k);
+              if ( $l[0] == 'avalaMappedFields' ) {
+                if ( array_key_exists( $l[2], $jsonArray ) && !empty( $v ) ) {
+                  $jsonArray[ $l[2] ] = $entry[ $v ];
                 }
+              }
             }
 
             // Remove empty ARRAY fields so we do not submit blank data
-            $jsonArray['CustomData'] = array_filter( $jsonArray['CustomData'] );
-            $jsonArray['WebSessionData'] = array_filter( $jsonArray['WebSessionData'] );
             $jsonArray = array_filter( $jsonArray );
+            // json encode to string for sending
+            $jsonString = json_encode( $jsonArray );
 
             // wrap string in [ ] per Avala API requirements
-            $jsonString = '[' . json_encode( $jsonArray ) . ']';
+            // $jsonString = '[' . jsonString . ']';
 
-            // cURL :: this sends off the data to Avala
+            // cURL :: this sends off the data
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
             curl_setopt($ch, CURLOPT_POSTFIELDS, $jsonString);
@@ -433,10 +398,10 @@ if (class_exists("GFForms")) {
             // debug things
             if ( $this->get_plugin_setting('nes_debugMode') == 1 )
             {
-                $this->_avala_result['cURL'] = $result;
-                $this->_avala_result['JSON'] = $jsonArray;
-                $this->_avala_result['FEED'] = $feed;
-                $this->_avala_result['ENTRY'] = $entry;
+                $this->_nes_result['cURL'] = $result;
+                $this->_nes_result['JSON'] = $jsonArray;
+                $this->_nes_result['FEED'] = $feed;
+                $this->_nes_result['ENTRY'] = $entry;
                 add_action('wp_footer', array( $this, 'nes_debug') );
                 add_filter("gform_confirmation", "nes_debug_confirm", 10, 4);
             }
@@ -453,8 +418,8 @@ if (class_exists("GFForms")) {
         // Debug builder
         public function nes_debug()
         {
-            $arrays = $this->_avala_result;
-            $o = '<div id="avala-gform-debug" class=""><h3>Lead Enrichment Debug Details</h3><hr>';
+            $arrays = $this->_nes_result;
+            $o = '<div id="nes-gform-debug" class=""><h3>Lead Enrichment Debug Details</h3><hr>';
             foreach ($arrays as $array => $value)
             {
                 $o .='<h4>'.$array.'</h4><pre>'.print_r($value, true).'</pre><hr>';
@@ -465,8 +430,8 @@ if (class_exists("GFForms")) {
         }
         public function nes_debug_confirm($confirmation, $form, $lead, $ajax)
         {
-            $arrays = $this->_avala_result;
-            $o = '<div id="avala-gform-debug" class="avala_confirm"><h3>Lead Enrichment Debug Details</h3><hr>';
+            $arrays = $this->_nes_result;
+            $o = '<div id="nes-gform-debug" class="nes_confirm"><h3>Lead Enrichment Debug Details</h3><hr>';
             foreach ($arrays as $array => $value)
             {
                 $o .='<h4>'.$array.'</h4><pre>'.print_r($value, true).'</pre><hr>';
